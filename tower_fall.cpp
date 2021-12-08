@@ -14,7 +14,7 @@ double towerHeight() // Get tower height from the user
 }
 
 double ballHeight(double height, double seconds) // Calculate fall distance at a particular second given 
-                                              // a tower height and second count
+                                                 // a tower height and second count
 {
     // Using formula: [ fall_distance = u_0 * time + (g * time^2) / 2 ], assuming initial velocity (u_0) = 0
     double fall_distance{ (constants::g * (seconds * seconds)) / 2.0 };
