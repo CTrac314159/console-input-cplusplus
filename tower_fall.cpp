@@ -1,8 +1,8 @@
 #include <iostream>
+#include "constants.h"
 
 // This program calculates the height of a ball falling from a tower with a user-specified height in
-// meters. The height is calculated every second up to 5 seconds. Function calls past this time can be 
-// added in main() to account for height input where the ball does not reach the ground before 5 seconds.
+// meters. The height is calculated every second.
 
 double towerHeight() // Get tower height from the user
 {
@@ -16,40 +16,40 @@ double towerHeight() // Get tower height from the user
 double ballHeight(double height, double seconds) // Calculate fall distance at a particular second given 
                                               // a tower height and second count
 {
-    constexpr double g{ 9.81 }; // Define gravity as a constant, cannot be changed
-
     // Using formula: [ fall_distance = u_0 * time + (g * time^2) / 2 ], assuming initial velocity (u_0) = 0
-    double fall_distance{ (g * (seconds * seconds)) / 2.0 };
+    double fall_distance{ (constants::g * (seconds * seconds)) / 2.0 };
     double ball_height{ height - fall_distance };
 
-    return ball_height;
-}
-
-void print_Height(double ball_height, double seconds) // Output ball height every second until it reaches the ground
-                                                      // given a ball height and second count. 
-{
-    if (ball_height > 0.0)
-        std::cout << "At " << static_cast<int>(seconds) << " seconds, the height of the ball is " << ball_height << " meters" << '\n';
+    if (ball_height < 0.0) // Check to see if the ball has reached the ground (height of zero)
+        return 0.0;
     else
-        std::cout << "At " << static_cast<int>(seconds) << " seconds, the ball is on the ground" << '\n';
+        return ball_height;
 }
 
-void calculatePrint(double tower_height, int seconds)
+bool calculatePrint(double tower_height, int seconds)
 {
-    double ball_height{ ballHeight(tower_height, static_cast<double>(seconds)) }; // Cast the second count to a float for calculations
-    print_Height(ball_height, static_cast<double>(seconds));
+    double ball_height{ ballHeight(tower_height, static_cast<double>(seconds)) }; // Call the ballHeight function
+
+    if (ball_height > 0.0) // If the ball is not on the ground, print the height
+        std::cout << "At " << seconds << " seconds, the height of the ball is " << ball_height << " meters." << '\n';
+    else
+        std::cout << "At " << seconds << " seconds, the ball is on the ground." << '\n';
+
+    return (ball_height == 0.0); // Return the ball-on-ground Boolean
 }
 
 int main()
 {
     const double tower_height{ towerHeight() }; // Get input tower height from the user
+    int seconds{ 0 }; // Initialize the time increment
+    bool onGround{ false }; // Initialize Boolean ball-on-ground variable
 
-    calculatePrint(tower_height, 0);
-    calculatePrint(tower_height, 1);
-    calculatePrint(tower_height, 2);
-    calculatePrint(tower_height, 3);
-    calculatePrint(tower_height, 4);
-    calculatePrint(tower_height, 5);
+    do
+    {
+        onGround = calculatePrint(tower_height, seconds++);
+    }
+
+    while (!onGround); // Continue calculating the height until the ball reaches the ground
 
     return 0;
 }
